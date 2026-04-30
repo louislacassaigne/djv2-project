@@ -18,6 +18,13 @@ public class Weapon : MonoBehaviour
 
     private float fireCooldown = 0f;
 
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     void Update()
     {
         UpdatePriorityTarget();
@@ -108,5 +115,7 @@ public class Weapon : MonoBehaviour
             projectile.speed = tower.projectileSpeed;
             projectile.damage = tower.projectileDamage;
         }
+
+        audioSource.Play();
     }
 }

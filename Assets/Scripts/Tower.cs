@@ -32,13 +32,10 @@ public class Tower : MonoBehaviour
     public float fireRate = 1f;
     public float projectileSpeed = 10f;
     public int projectileDamage = 10;
-
-    [Header("Portée")]
     public float range = 8f;
 
     [Header("Cibles détectées")]
     public List<EnemyMovement> detectedEnemies = new List<EnemyMovement>();
-
 
 
     void Update()

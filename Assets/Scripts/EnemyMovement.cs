@@ -19,6 +19,7 @@ public class EnemyMovement : MonoBehaviour
 
     private bool isDeadOrFinished = false;
 
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -80,6 +81,7 @@ public class EnemyMovement : MonoBehaviour
         {
             WaveManager.Instance.EnemyKilled(scoreValue, reward);
         }
+        
 
         Destroy(gameObject);
     }
