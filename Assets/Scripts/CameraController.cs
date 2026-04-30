@@ -29,17 +29,12 @@ public class CameraController : MonoBehaviour
         float arenaWidth = xMax - xMin;
 
         // Largeur totale visible par la caméra
-        // Exemple :
-        // si l'arène doit occuper 70% de l'écran,
-        // alors l'écran doit être plus large.
         float totalVisibleWidth = arenaWidth / arenaScreenPercent;
-
         // Taille orthographique nécessaire
         cam.orthographicSize = totalVisibleWidth / (2f * cam.aspect);
 
-        // Bord gauche de l'arène
+     
         float leftArenaEdge = xMin;
-
         // Largeur visible totale
         float visibleWidth = cam.orthographicSize * 2f * cam.aspect;
 
@@ -67,8 +62,6 @@ public class CameraController : MonoBehaviour
                 Space.World
             );
         }
-
-        // 🔒 Clamp Z après déplacement
         Vector3 pos = transform.position;
         pos.z = Mathf.Clamp(pos.z, zMin, zMax);
         transform.position = pos;

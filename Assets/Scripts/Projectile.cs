@@ -69,10 +69,10 @@ public class Projectile : MonoBehaviour
         return;
     }
 
-    // Position actuelle
+
     Vector3 currentPosition = transform.position;
 
-    // Position cible
+
     Vector3 newPosition = Vector3.Lerp(
         startPosition,
         targetPosition,
@@ -81,7 +81,6 @@ public class Projectile : MonoBehaviour
 
     newPosition.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
 
-    // Petite anticipation pour une direction stable
     Vector3 nextPosition = Vector3.Lerp(
         startPosition,
         targetPosition,
@@ -92,10 +91,7 @@ public class Projectile : MonoBehaviour
 
     Vector3 direction = nextPosition - newPosition;
 
-    // Déplacement
     transform.position = newPosition;
-
-    // Rotation propre
     if (direction.sqrMagnitude > 0.0001f)
     {
         transform.rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);

@@ -10,7 +10,6 @@ public class TowerShopUI : MonoBehaviour
 
     void Awake()
     {
-        // récupère le TMP sur le même objet
         priceText = GetComponent<TextMeshProUGUI>();
     }
 

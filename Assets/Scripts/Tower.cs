@@ -1,11 +1,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class Tower : MonoBehaviour
+
+
 {
+    public int level = 1;
+
+    [Header("Menus")]
+
+    public GameObject shopMenu;
+    public GameObject towerMenu;
+
+    public TextMeshProUGUI damageText;
+    public TextMeshProUGUI fireRateText;
+    public TextMeshProUGUI rangeText;
+    public TextMeshProUGUI levelText;
+    public TextMeshProUGUI targetsText;
+    public TextMeshProUGUI upgradeCostText;
+    public Sprite icon;
+    public Image towerImage;
+
     [Header("Économie")]
-    public int purchaseCost = 100;
+    public int purchaseCost = 500;
 
     [Header("Tir")]
     public int projectileCount = 1;
@@ -18,6 +38,8 @@ public class Tower : MonoBehaviour
 
     [Header("Cibles détectées")]
     public List<EnemyMovement> detectedEnemies = new List<EnemyMovement>();
+
+
 
     void Update()
     {
@@ -51,4 +73,36 @@ public class Tower : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);
     }
+
+    void OnMouseDown()
+    {
+        if (!ShopManager.Instance.IsBuilding() && WaveManager.Instance.currentPhase == WaveManager.Phase.Preparation)
+        {
+            shopMenu.SetActive(false);
+            towerMenu.SetActive(true);
+            UpdateTowerMenu();
+        }
+    }
+
+    public void UpdateTowerMenu()
+    {
+        towerMenu.GetComponent<TowerMenu>().selected_tower = this;
+        damageText.text = "Dégâts: " + projectileDamage;
+        fireRateText.text = "Cadence de tir: " + fireRate.ToString("F1") + " tirs/s";
+        rangeText.text = "Portée: " + range.ToString("F1");
+        levelText.text = "Niveau: " + level;
+        targetsText.text = "Cibles: " + projectileCount;
+        upgradeCostText.text = (level*200).ToString();
+        towerImage.sprite = icon;
+    }
+
+    public void Upgrade()
+{
+    level++;
+    fireRate += 0.05f;
+    projectileDamage += 5;
+    UpdateTowerMenu();
+}
+
+
 }

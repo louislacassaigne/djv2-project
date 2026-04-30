@@ -11,16 +11,13 @@ public class EnemyMovement : MonoBehaviour
     public int maxHealth = 100;
     public int currentHealth;
 
-    [Tooltip("Score gagné si l'ennemi est tué")]
     public int scoreValue = 10;
-
-    [Tooltip("Monnaie gagnée si l'ennemi est tué")]
     public int reward = 5;
 
     private NavMeshAgent agent;
     private Animator animator;
 
-    private bool isDeadOrFinished = false; // 🔥 IMPORTANT
+    private bool isDeadOrFinished = false;
 
     void Start()
     {
@@ -57,9 +54,6 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // -------------------------
-    // DAMAGE
-    // -------------------------
     public void TakeDamage(int damage)
     {
         if (isDeadOrFinished)
@@ -73,9 +67,6 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // -------------------------
-    // MORT
-    // -------------------------
     void Die()
     {
         if (isDeadOrFinished)
@@ -93,9 +84,6 @@ public class EnemyMovement : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // -------------------------
-    // OBJECTIF ATTEINT
-    // -------------------------
     void ReachGoal()
     {
         if (isDeadOrFinished)
@@ -107,7 +95,7 @@ public class EnemyMovement : MonoBehaviour
 
         if (WaveManager.Instance != null)
         {
-            WaveManager.Instance.EnemyReachedEnd();
+            WaveManager.Instance.EnemyReachedEnd(scoreValue);
         }
 
         Destroy(gameObject);

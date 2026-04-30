@@ -6,14 +6,17 @@ public class BuyButton : MonoBehaviour
 
     public void BuyTower()
     {
-        Debug.Log("Bouton BUY cliqué");
-
-        if (towerToBuy == null)
+        if (WaveManager.Instance.coins < towerToBuy.purchaseCost)
         {
-            Debug.LogError("towerToBuy est NULL");
+            Debug.Log("Pas assez de pièces pour acheter cette tour !");
             return;
         }
+        else
+        {
+            WaveManager.Instance.coins -= towerToBuy.purchaseCost;
+            ShopManager.Instance.SelectTower(towerToBuy);
+            WaveManager.Instance.UpdateUI();
+        }
 
-        ShopManager.Instance.SelectTower(towerToBuy);
     }
 }

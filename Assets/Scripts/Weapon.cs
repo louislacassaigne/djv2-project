@@ -26,9 +26,6 @@ public class Weapon : MonoBehaviour
         HandleFireRate();
     }
 
-    /// <summary>
-    /// Gère la cadence de tir
-    /// </summary>
     void HandleFireRate()
     {
         if (tower == null)
@@ -47,9 +44,6 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Récupère l'ennemi prioritaire
-    /// </summary>
     void UpdatePriorityTarget()
     {
         if (tower == null)
@@ -65,9 +59,6 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Oriente l'arme vers la cible prioritaire
-    /// </summary>
     void RotateTowardsTarget()
     {
         if (currentTarget == null)
@@ -89,9 +80,6 @@ public class Weapon : MonoBehaviour
         );
     }
 
-    /// <summary>
-    /// Tire sur tous les ennemis détectés
-    /// </summary>
     void Shoot()
     {
         if (tower == null || projectilePrefab == null)
@@ -102,22 +90,20 @@ public class Weapon : MonoBehaviour
             if (enemy == null)
                 continue;
 
-            // Position de spawn
+  
             Vector3 spawnPosition = firePoint != null
                 ? firePoint.position
                 : transform.position;
 
-            // Création du projectile
+
             Projectile projectile = Instantiate(
                 projectilePrefab,
                 spawnPosition,
                 Quaternion.identity
             );
 
-            // Active le projectile
-            projectile.gameObject.SetActive(true);
 
-            // Configure le projectile
+            projectile.gameObject.SetActive(true);
             projectile.target = enemy;
             projectile.speed = tower.projectileSpeed;
             projectile.damage = tower.projectileDamage;

@@ -4,6 +4,9 @@ public class ShopManager : MonoBehaviour
 {
     public static ShopManager Instance;
 
+    public GameObject towerMenu;
+    public GameObject shopMenu;
+
     [Header("Tour sélectionnée")]
     public Tower selectedTower;
 
@@ -34,20 +37,16 @@ public class ShopManager : MonoBehaviour
         return availableSlots > 0;
     }
 
-    // -------------------------
-    // SÉLECTION TOUR
-    // -------------------------
+
     public void SelectTower(Tower tower)
     {
-        // ❌ déjà en construction
+   
         if (selectedTower != null)
         {
             Debug.Log("Construction déjà en cours");
-            Debug.Log("slots restants: " + availableSlots);
             return;
         }
 
-        // ❌ plus de slots
         if (availableSlots <= 0)
         {
             Debug.Log("Aucun slot disponible !");
@@ -61,15 +60,9 @@ public class ShopManager : MonoBehaviour
         ShowAllSlots();
     }
 
-    // -------------------------
-    // PLACEMENT FINAL
-    // -------------------------
     public void OnTowerPlaced()
     {
         availableSlots--;
-
-        Debug.Log("Tour placée. Slots restants: " + availableSlots);
-
         selectedTower = null;
 
         HideAllSlots();
@@ -77,16 +70,13 @@ public class ShopManager : MonoBehaviour
 
     public void CancelSelection()
     {
-        Debug.Log("Mode construction DÉSACTIVÉ");
 
         selectedTower = null;
 
         HideAllSlots();
     }
 
-    // -------------------------
-    // VISUALISATION
-    // -------------------------
+
     void ShowAllSlots()
     {
 
@@ -102,6 +92,15 @@ public class ShopManager : MonoBehaviour
         foreach (BuildSlot slot in allSlots)
         {
             slot.HideHighlight();
+        }
+    }
+
+    public void closeTowerMenu()
+    {
+        if (towerMenu != null)
+        {
+            towerMenu.SetActive(false);
+            shopMenu.SetActive(true);
         }
     }
 }

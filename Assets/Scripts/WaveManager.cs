@@ -2,9 +2,11 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 
+
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager Instance;
+
 
     public enum Phase
     {
@@ -24,7 +26,11 @@ public class WaveManager : MonoBehaviour
     public int enemiesAlive = 0;
 
     [Header("Multiplicateur")]
-    public float multiplier = 1f;
+    public int multiplier = 1;
+    public int X = 5; //multiplicateur max
+    public int y = 5; //nombre d'ennemis nécessaires pour modifier le score
+
+    public int multiplier_progress = 0;
 
     [Header("Spawn")]
     public Transform spawnPoint;
@@ -38,7 +44,7 @@ public class WaveManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
 
     [Header("Coins")]
-    public int coins = 0;
+    public int coins = 3000;
 
     [Header("UI Coins")]
     public TextMeshProUGUI coinsText;
@@ -76,9 +82,6 @@ public class WaveManager : MonoBehaviour
         UpdateUI();
     }
 
-    // -------------------------
-    // PREPARATION
-    // -------------------------
     public void StartPreparation()
     {
         currentPhase = Phase.Preparation;
@@ -132,9 +135,6 @@ public class WaveManager : MonoBehaviour
         yield return null;
     }
 
-    // -------------------------
-    // COMBAT
-    // -------------------------
     void HandleCombat()
     {
         timer -= Time.deltaTime;
@@ -208,25 +208,71 @@ public class WaveManager : MonoBehaviour
         enemiesAlive++;
     }
 
-    // -------------------------
-    // NOTIFICATIONS ENNEMIS
-    // -------------------------
+
 
     public void EnemyKilled(int scoreValue, int reward)
     {
+
+        if (multiplier < 0)
+        {
+            multiplier = 1;
+            multiplier_progress = 1;
+        }
+        else
+        {
+            IncreaseMultiplierProgress();
+        }
+
+
         enemiesAlive--;
-        score += scoreValue;
+        score += scoreValue * multiplier;
         coins += reward;
+        UpdateUI();
+        Debug.Log("multiplicateur: " + multiplier + " (progress: " + multiplier_progress + ")");
+
     }
 
-    public void EnemyReachedEnd()
+    public void EnemyReachedEnd(int scoreValue)
     {
+        if (multiplier > 0)
+        {
+            multiplier = -1;
+            multiplier_progress = -1;
+        }
+        else
+        {
+            DecreaseMultiplierProgress();
+        }
+
         enemiesAlive--;
+        score += scoreValue * multiplier;
+        UpdateUI();
+        Debug.Log("multiplicateur: " + multiplier + " (progress: " + multiplier_progress + ")");
     }
 
-    // -------------------------
-    // FIN DE VAGUE
-    // -------------------------
+    void IncreaseMultiplierProgress()
+    {
+        multiplier_progress++;
+
+        if (multiplier_progress >= y && multiplier < X)
+        {
+            multiplier_progress = 0;
+            multiplier += 1;
+        }
+    }
+
+    void DecreaseMultiplierProgress()
+    {
+        multiplier_progress--;
+
+        if (multiplier_progress <= -y && multiplier < X)
+        {
+            multiplier_progress = 0;
+            multiplier -= 1;
+        }
+    }
+
+
     void EndWave()
     {
         if (!waveRunning)
@@ -239,9 +285,7 @@ public class WaveManager : MonoBehaviour
         StartPreparation();
     }
 
-    // -------------------------
-    // CONFIG WAVES
-    // -------------------------
+ 
     void GetWaveConfig(int wave, out int enemyLevel, out int enemyCount)
     {
         enemyLevel = 1 + (wave / 3); // level change toutes les 3 vagues
@@ -265,23 +309,21 @@ public class WaveManager : MonoBehaviour
         stats.speed = 1f + (level - 1) * 0.1f;
         stats.maxHealth = 50 + (level - 1) * 50;
         stats.scoreValue = 10 + (level - 1) * 5;
-        stats.reward = 10 + (level - 1) * 5;
+        stats.reward = 15 + level*5;
         stats.isBoss = isBoss;
 
         if (isBoss)
         {
-            stats.maxHealth *= 5;
-            stats.scoreValue *= 10;
-            stats.reward *= 10;
+            stats.maxHealth *= 4;
+            stats.scoreValue *= 4;
+            stats.reward *= 4;
         }
 
         return stats;
     }
 
-    // -------------------------
-    // UI
-    // -------------------------
-    void UpdateUI()
+
+    public void UpdateUI()
     {
         if (timerText != null)
             timerText.text = Mathf.Ceil(timer).ToString();
@@ -312,9 +354,7 @@ public class WaveManager : MonoBehaviour
             defenseMenu.SetActive(isCombat);
     }
 
-    // -------------------------
-    // CONFIG VAGUE
-    // -------------------------
+
     int GetEnemyCountForWave()
     {
         return 10 + (waveIndex * 2);
