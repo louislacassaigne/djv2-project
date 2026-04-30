@@ -7,7 +7,7 @@ public class EnemyMovement : MonoBehaviour
     public Transform target;
 
     [Header("Statistiques")]
-    public float speed = 3.5f;
+    public float speed = 1f;
     public int maxHealth = 100;
     public int currentHealth;
 
@@ -20,24 +20,25 @@ public class EnemyMovement : MonoBehaviour
     private NavMeshAgent agent;
     private Animator animator;
 
+    private bool isDeadOrFinished = false; // 🔥 IMPORTANT
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        // Initialise les PV
         currentHealth = maxHealth;
 
-        // Configure la vitesse de déplacement
-        agent.speed = speed;
+        if (agent != null)
+        {
+            agent.speed = speed;
+        }
 
-        // Lance l'animation de course
         if (animator != null)
         {
             animator.SetTrigger("start_running");
         }
 
-        // Définit la destination
         if (target != null)
         {
             agent.SetDestination(target.position);
@@ -46,22 +47,25 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        // Vérifie si l'ennemi est arrivé
+        if (isDeadOrFinished)
+            return;
+
         if (!agent.pathPending &&
-            agent.remainingDistance <= agent.stoppingDistance)
+            agent.remainingDistance <= agent.stoppingDistance + 0.1f)
         {
             ReachGoal();
         }
     }
 
-    /// <summary>
-    /// Inflige des dégâts à l'ennemi
-    /// </summary>
+    // -------------------------
+    // DAMAGE
+    // -------------------------
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
+        if (isDeadOrFinished)
+            return;
 
-        Debug.Log(gameObject.name + " prend " + damage + " dégâts.");
+        currentHealth -= damage;
 
         if (currentHealth <= 0)
         {
@@ -69,30 +73,42 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Mort de l'ennemi
-    /// </summary>
+    // -------------------------
+    // MORT
+    // -------------------------
     void Die()
     {
+        if (isDeadOrFinished)
+            return;
+
+        isDeadOrFinished = true;
+
         Debug.Log("Ennemi éliminé");
 
-        // TODO :
-        // Ajouter scoreValue au score
-        // Ajouter reward à la monnaie du joueur
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.EnemyKilled(scoreValue, reward);
+        }
 
         Destroy(gameObject);
     }
 
-    /// <summary>
-    /// L'ennemi atteint la fin du chemin
-    /// </summary>
+    // -------------------------
+    // OBJECTIF ATTEINT
+    // -------------------------
     void ReachGoal()
     {
+        if (isDeadOrFinished)
+            return;
+
+        isDeadOrFinished = true;
+
         Debug.Log("Base touchée");
 
-        // TODO :
-        // Retirer scoreValue du score
-        // Retirer des PV au joueur/base
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.EnemyReachedEnd();
+        }
 
         Destroy(gameObject);
     }

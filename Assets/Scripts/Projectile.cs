@@ -50,49 +50,57 @@ public class Projectile : MonoBehaviour
     }
 
     void MoveAlongArc()
+{
+    if (!initialized || target == null)
     {
-        if (!initialized || target == null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        targetPosition = target.transform.position;
-
-        journeyProgress += speed * Time.deltaTime;
-
-        float t = journeyProgress / journeyLength;
-
-        if (t >= 1f)
-        {
-            HitTarget();
-            return;
-        }
-
-        // Position cible de cette frame
-        Vector3 newPosition = Vector3.Lerp(
-            startPosition,
-            targetPosition,
-            t
-        );
-
-        // Arc vertical
-        newPosition.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
-
-        // Calcul direction réelle du mouvement
-        Vector3 moveDirection = newPosition - previousPosition;
-
-        // Déplacement
-        transform.position = newPosition;
-
-        // Orientation vers la trajectoire
-        if (moveDirection.sqrMagnitude > 0.0001f)
-        {
-            transform.rotation = Quaternion.LookRotation(moveDirection.normalized);
-        }
-
-        previousPosition = newPosition;
+        Destroy(gameObject);
+        return;
     }
+
+    targetPosition = target.transform.position;
+
+    journeyProgress += speed * Time.deltaTime;
+
+    float t = journeyProgress / journeyLength;
+
+    if (t >= 1f)
+    {
+        HitTarget();
+        return;
+    }
+
+    // Position actuelle
+    Vector3 currentPosition = transform.position;
+
+    // Position cible
+    Vector3 newPosition = Vector3.Lerp(
+        startPosition,
+        targetPosition,
+        t
+    );
+
+    newPosition.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
+
+    // Petite anticipation pour une direction stable
+    Vector3 nextPosition = Vector3.Lerp(
+        startPosition,
+        targetPosition,
+        t + 0.01f
+    );
+
+    nextPosition.y += Mathf.Sin((t + 0.01f) * Mathf.PI) * arcHeight;
+
+    Vector3 direction = nextPosition - newPosition;
+
+    // Déplacement
+    transform.position = newPosition;
+
+    // Rotation propre
+    if (direction.sqrMagnitude > 0.0001f)
+    {
+        transform.rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+    }
+}
 
     void HitTarget()
     {

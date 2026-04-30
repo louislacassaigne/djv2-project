@@ -6,6 +6,9 @@ public class CameraController : MonoBehaviour
     public float xMin = -10f;
     public float xMax = 10f;
 
+    public float zMin = -9f;
+    public float zMax = 9.3f;
+
     [Header("Occupation écran")]
     [Range(0.1f, 1f)]
     public float arenaScreenPercent = 0.65f;
@@ -52,6 +55,7 @@ public class CameraController : MonoBehaviour
         );
     }
 
+
     void HandleMovement()
     {
         float moveZ = Input.GetAxis("Vertical");
@@ -63,5 +67,10 @@ public class CameraController : MonoBehaviour
                 Space.World
             );
         }
+
+        // 🔒 Clamp Z après déplacement
+        Vector3 pos = transform.position;
+        pos.z = Mathf.Clamp(pos.z, zMin, zMax);
+        transform.position = pos;
     }
 }
